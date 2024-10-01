@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  db: 
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=${DB_NAME} 
+      - POSTGRES_USER=${DB_USERNAME} 
+      - POSTGRES_PASSWORD=${DB_PASSWORD} 
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs
+    ports: 
+      - '3000:3000'
+    environment:
+      - PORT=${PORT}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SUPPORT_EMAIL=${SUPPORT_EMAIL}
+      - COIN_MARKET_BASE_URL=${COIN_MARKET_BASE_URL}
+      - COIN_MARKET_API_KEY=${COIN_MARKET_API_KEY}
+    depends_on:
+      - db
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "npm", "run", "start:prod"]
+
+volumes:
+  pgdata:

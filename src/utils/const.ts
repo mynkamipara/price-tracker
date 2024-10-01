@@ -1,0 +1,1 @@
+export const VALID_COIN_SLUG = ['ethereum','polygon'];
